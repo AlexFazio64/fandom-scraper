@@ -1,9 +1,9 @@
 const puppeteer = require("puppeteer");
 const fs = require("fs");
+const { log } = require("console");
 
 const LINKS_PATH = "data/links.json";
 const CATEGORIES_PATH = "data/categories.json";
-// const CONTENT_PATH = "data/content.json";
 
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -110,9 +110,72 @@ async function getTableOfContent(link) {
   browser.close();
 }
 
+async function getDescription(link) {
+  console.log(`Getting description for [ ${link.id} ]`);
+
+  const browser = await puppeteer.launch();
+  const page = await browser.newPage();
+  await page.goto(link.url);
+
+  const description = await page.evaluate(() => {
+    let lis = "";
+    let arr = Array.from(document.querySelectorAll(".portable-infobox"));
+    let curr = null;
+
+    if (arr.length !== 0) curr = arr[0].nextElementSibling;
+    else {
+      console.error("No portable-infobox found");
+      arr = Array.from(document.querySelectorAll(".mw-parser-output > figure"));
+    }
+
+    if (arr.length === 0) {
+      console.error("No figure found");
+      arr = Array.from(document.querySelectorAll(".mw-parser-output"));
+      curr = arr[0].firstElementChild;
+    } else curr = arr[0].nextElementSibling;
+
+    console.log("Found anchor: " + arr[0].nodeName);
+
+    while (curr !== null) {
+      if (curr.id === "toc" || curr.nodeName === "H2") break;
+      if (curr.nodeName !== "#comment") lis += curr.textContent;
+      curr = curr.nextSibling;
+    }
+
+    return lis.trim();
+  });
+
+  console.log(description);
+  browser.close();
+}
+
 // getLinks();
 // getCategories();
-getTableOfContent({
-  id: "Tsubasa Hanekawa",
-  url: "https://bakemonogatari.fandom.com/wiki/Tsubasa_Hanekawa#Catchphrases_/_Running_Gags:~:text=%22I%20don%27t%20know%20everything%2C%20I%20only%20know%20what%20I%20know.%22",
+// getTableOfContent({
+//   id: "Tsubasa_Hanekawa",
+//   url: "https://bakemonogatari.fandom.com/wiki/Tsubasa_Hanekawa",
+// });
+
+getDescription({
+  id: "Arcs",
+  url: "https://bakemonogatari.fandom.com/wiki/Arcs",
 });
+
+/************ Pages with different structure **************
+https://bakemonogatari.fandom.com/wiki/Tsubasa_Hanekawa
+  - complete layout
+  -> OK
+
+https://bakemonogatari.fandom.com/wiki/Namishiro_Park
+  - figure instead of portable-infobox
+  -> OK
+
+https://bakemonogatari.fandom.com/wiki/Occult_Research_Club
+  - no toc
+  -> OK
+
+https://bakemonogatari.fandom.com/wiki/Arcs
+  - no portable-infobox
+  - no figure
+  -> OK
+**********************************************************/
