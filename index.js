@@ -94,6 +94,19 @@ async function getTableOfContent(link) {
         } else lis.push(top.querySelector("a").hash);
       }
     );
+
+    if (lis.length === 0) {
+      console.error("No table of content found");
+      lis = Array.from(document.querySelectorAll(".mw-headline")).map(
+        (elem) => "#" + elem.id
+      );
+    }
+
+    // lis = lis.filter(
+    //   (elem) =>
+    //     elem !== "#References" && elem !== "#Navigation" && elem !== "#Gallery"
+    // );
+    
     return lis;
   });
 
@@ -151,15 +164,15 @@ async function getDescription(link) {
 
 // getLinks();
 // getCategories();
-// getTableOfContent({
-//   id: "Tsubasa_Hanekawa",
-//   url: "https://bakemonogatari.fandom.com/wiki/Tsubasa_Hanekawa",
-// });
-
-getDescription({
-  id: "Arcs",
-  url: "https://bakemonogatari.fandom.com/wiki/Arcs",
+getTableOfContent({
+  id: "Occult Research Club",
+  url: "https://bakemonogatari.fandom.com/wiki/Occult_Research_Club",
 });
+
+// getDescription({
+//   id: "Arcs",
+//   url: "https://bakemonogatari.fandom.com/wiki/Arcs",
+// });
 
 /************ Pages with different structure **************
 https://bakemonogatari.fandom.com/wiki/Tsubasa_Hanekawa
