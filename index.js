@@ -1,6 +1,5 @@
 const puppeteer = require("puppeteer");
 const fs = require("fs");
-const { log } = require("console");
 
 const LINKS_PATH = "data/links.json";
 const CATEGORIES_PATH = "data/categories.json";
@@ -25,7 +24,7 @@ async function getLinks() {
     }));
   });
 
-  fs.writeFileSync(path, JSON.stringify(LINKS_PATH, null, 2));
+  fs.writeFileSync(LINKS_PATH, JSON.stringify(links, null, 2));
 
   browser.close();
 }
@@ -106,7 +105,7 @@ async function getTableOfContent(link) {
     //   (elem) =>
     //     elem !== "#References" && elem !== "#Navigation" && elem !== "#Gallery"
     // );
-    
+
     return lis;
   });
 
