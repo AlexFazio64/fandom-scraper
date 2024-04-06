@@ -610,7 +610,12 @@
   {
     "id": "Bakemonogatari Wiki",
     "url": "https://bakemonogatari.fandom.com/wiki/Bakemonogatari_Wiki",
-    "categories": []
+    "categories": [
+      {
+        "text": "Browse",
+        "url": "https://bakemonogatari.fandom.com/wiki/Category:Browse"
+      }
+    ]
   },
   {
     "id": "Black Hanekawa",
@@ -627,10 +632,6 @@
       {
         "text": "Heroines",
         "url": "https://bakemonogatari.fandom.com/wiki/Category:Heroines"
-      },
-      {
-        "text": "2 more",
-        "url": ""
       },
       {
         "text": "Oddities",
@@ -873,10 +874,6 @@
         "url": "https://bakemonogatari.fandom.com/wiki/Category:Oddities"
       },
       {
-        "text": "2 more",
-        "url": ""
-      },
-      {
         "text": "Oddity Characters",
         "url": "https://bakemonogatari.fandom.com/wiki/Category:Oddity_Characters"
       },
@@ -949,10 +946,6 @@
         "url": "https://bakemonogatari.fandom.com/wiki/Category:Vampire_Hunter"
       },
       {
-        "text": "3 more",
-        "url": ""
-      },
-      {
         "text": "Oddities",
         "url": "https://bakemonogatari.fandom.com/wiki/Category:Oddities"
       },
@@ -1013,10 +1006,6 @@
       {
         "text": "Vampire Hunter",
         "url": "https://bakemonogatari.fandom.com/wiki/Category:Vampire_Hunter"
-      },
-      {
-        "text": "3 more",
-        "url": ""
       },
       {
         "text": "Oddities",
@@ -1381,10 +1370,6 @@
         "url": "https://bakemonogatari.fandom.com/wiki/Category:Oddities"
       },
       {
-        "text": "3 more",
-        "url": ""
-      },
-      {
         "text": "Oddity Characters",
         "url": "https://bakemonogatari.fandom.com/wiki/Category:Oddity_Characters"
       },
@@ -1591,10 +1576,6 @@
       {
         "text": "Oddity Inflicted Characters",
         "url": "https://bakemonogatari.fandom.com/wiki/Category:Oddity_Inflicted_Characters"
-      },
-      {
-        "text": "2 more",
-        "url": ""
       },
       {
         "text": "Araragi Family",
@@ -1811,10 +1792,6 @@
       {
         "text": "Oddity Inflicted Characters",
         "url": "https://bakemonogatari.fandom.com/wiki/Category:Oddity_Inflicted_Characters"
-      },
-      {
-        "text": "3 more",
-        "url": ""
       },
       {
         "text": "Oddity Characters",
@@ -2099,10 +2076,6 @@
         "url": "https://bakemonogatari.fandom.com/wiki/Category:Oddity_Characters"
       },
       {
-        "text": "3 more",
-        "url": ""
-      },
-      {
         "text": "Males",
         "url": "https://bakemonogatari.fandom.com/wiki/Category:Males"
       },
@@ -2219,10 +2192,6 @@
         "url": "https://bakemonogatari.fandom.com/wiki/Category:Heroines"
       },
       {
-        "text": "3 more",
-        "url": ""
-      },
-      {
         "text": "Oddities",
         "url": "https://bakemonogatari.fandom.com/wiki/Category:Oddities"
       },
@@ -2321,10 +2290,6 @@
       {
         "text": "Oddities",
         "url": "https://bakemonogatari.fandom.com/wiki/Category:Oddities"
-      },
-      {
-        "text": "2 more",
-        "url": ""
       },
       {
         "text": "Oddity Characters",
@@ -2461,10 +2426,6 @@
       {
         "text": "Heroines",
         "url": "https://bakemonogatari.fandom.com/wiki/Category:Heroines"
-      },
-      {
-        "text": "3 more",
-        "url": ""
       },
       {
         "text": "Oddities",
@@ -2899,10 +2860,6 @@
         "url": "https://bakemonogatari.fandom.com/wiki/Category:Oddities"
       },
       {
-        "text": "2 more",
-        "url": ""
-      },
-      {
         "text": "Oddity Characters",
         "url": "https://bakemonogatari.fandom.com/wiki/Category:Oddity_Characters"
       },
@@ -3073,10 +3030,6 @@
       {
         "text": "Males",
         "url": "https://bakemonogatari.fandom.com/wiki/Category:Males"
-      },
-      {
-        "text": "3 more",
-        "url": ""
       },
       {
         "text": "Heroines",
@@ -3965,10 +3918,6 @@
         "url": "https://bakemonogatari.fandom.com/wiki/Category:Oddity_Specialists"
       },
       {
-        "text": "3 more",
-        "url": ""
-      },
-      {
         "text": "Oddities",
         "url": "https://bakemonogatari.fandom.com/wiki/Category:Oddities"
       },
@@ -4063,10 +4012,6 @@
       {
         "text": "Heroines",
         "url": "https://bakemonogatari.fandom.com/wiki/Category:Heroines"
-      },
-      {
-        "text": "3 more",
-        "url": ""
       },
       {
         "text": "Oddities",
@@ -4293,10 +4238,6 @@
         "url": "https://bakemonogatari.fandom.com/wiki/Category:Oddity_Specialists"
       },
       {
-        "text": "2 more",
-        "url": ""
-      },
-      {
         "text": "Oddity Characters",
         "url": "https://bakemonogatari.fandom.com/wiki/Category:Oddity_Characters"
       },
@@ -4415,10 +4356,6 @@
         "url": "https://bakemonogatari.fandom.com/wiki/Category:Parents"
       },
       {
-        "text": "2 more",
-        "url": ""
-      },
-      {
         "text": "Oddity Specialists",
         "url": "https://bakemonogatari.fandom.com/wiki/Category:Oddity_Specialists"
       },
@@ -4443,10 +4380,6 @@
       {
         "text": "Oddities",
         "url": "https://bakemonogatari.fandom.com/wiki/Category:Oddities"
-      },
-      {
-        "text": "3 more",
-        "url": ""
       },
       {
         "text": "Oddity Characters",
@@ -4523,10 +4456,6 @@
       {
         "text": "Oddities",
         "url": "https://bakemonogatari.fandom.com/wiki/Category:Oddities"
-      },
-      {
-        "text": "3 more",
-        "url": ""
       },
       {
         "text": "Oddity Characters",
@@ -4839,10 +4768,6 @@
         "url": "https://bakemonogatari.fandom.com/wiki/Category:Oddity_Specialists"
       },
       {
-        "text": "3 more",
-        "url": ""
-      },
-      {
         "text": "Oddities",
         "url": "https://bakemonogatari.fandom.com/wiki/Category:Oddities"
       },
@@ -4917,10 +4842,6 @@
       {
         "text": "Oddities",
         "url": "https://bakemonogatari.fandom.com/wiki/Category:Oddities"
-      },
-      {
-        "text": "2 more",
-        "url": ""
       },
       {
         "text": "Oddity Characters",

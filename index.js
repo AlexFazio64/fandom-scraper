@@ -36,33 +36,26 @@ async function getCategories() {
   const page = await browser.newPage();
 
   let cat_arr = [];
-  let count = 0;
-  let chunk = links.length / 10;
 
   for (let link of links) {
-    count++;
-    if (count % chunk === 0) {
-      console.log(`Progress: ${count} / ${links.length}`);
-      console.log("Sleeping for 1 seconds...");
-      sleep(1000);
-    }
-
     console.log(`Getting categories for [ ${link.id} ]`);
-
     await page.goto(link.url);
+
+    const categories = await page.evaluate(() => {
+      const ctgr = Array.from(
+        document.querySelectorAll("ul.categories li")
+      ).filter((a) => !a.classList.contains("special-categories-label"));
+
+      return ctgr.map((el) => {
+        const a = el.querySelector("a");
+        return { text: a.textContent.trim(), url: a.href };
+      });
+    });
+
     const category = {
       id: link.id,
       url: link.url,
-      categories: await page.evaluate(() => {
-        const categories = Array.from(
-          document.querySelectorAll(".page-header__categories a")
-        );
-
-        return categories.map((category) => ({
-          text: category.textContent.trim(),
-          url: category.href,
-        }));
-      }),
+      categories,
     };
 
     cat_arr = [...cat_arr, category];
@@ -101,10 +94,10 @@ async function getTableOfContent(link) {
       );
     }
 
-    // lis = lis.filter(
-    //   (elem) =>
-    //     elem !== "#References" && elem !== "#Navigation" && elem !== "#Gallery"
-    // );
+    lis = lis.filter(
+      (elem) =>
+        elem !== "#References" && elem !== "#Navigation" && elem !== "#Gallery"
+    );
 
     return lis;
   });
@@ -162,12 +155,11 @@ async function getDescription(link) {
 }
 
 // getLinks();
-// getCategories();
-getTableOfContent({
-  id: "Occult Research Club",
-  url: "https://bakemonogatari.fandom.com/wiki/Occult_Research_Club",
-});
-
+getCategories();
+// getTableOfContent({
+//   id: "Occult Research Club",
+//   url: "https://bakemonogatari.fandom.com/wiki/Occult_Research_Club",
+// });
 // getDescription({
 //   id: "Arcs",
 //   url: "https://bakemonogatari.fandom.com/wiki/Arcs",
