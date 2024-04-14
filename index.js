@@ -114,11 +114,8 @@ async function getTableOfContent(link) {
   browser.close();
 }
 
-async function getDescription(link) {
+async function getDescription(page, link) {
   console.log(`Getting description for [ ${link.id} ]`);
-
-  const browser = await puppeteer.launch();
-  const page = await browser.newPage();
   await page.goto(link.url);
 
   const description = await page.evaluate(() => {
@@ -149,8 +146,7 @@ async function getDescription(link) {
     return lis.trim();
   });
 
-  console.log(description);
-  browser.close();
+  return description;
 }
 
 async function readMap(path) {
@@ -159,6 +155,8 @@ async function readMap(path) {
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
   await page.goto(map.url);
+
+  map["Description"] = await getDescription(page, map);
 
   for (let sec of map.toc) {
     if (typeof sec === "string") {
@@ -267,11 +265,6 @@ async function readMap(path) {
 //   id: "Tsubasa Hanekawa",
 //   url: "https://bakemonogatari.fandom.com/wiki/Tsubasa_Hanekawa",
 // });
-// getDescription({
-//   id: "Arcs",
-//   url: "https://bakemonogatari.fandom.com/wiki/Arcs",
-// });
-
 readMap(CONTENT_DIR + "Tsubasa Hanekawa");
 
 /************ Pages with different structure **************
