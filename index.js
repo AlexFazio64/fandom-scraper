@@ -3,6 +3,7 @@ const fs = require("fs");
 
 const LINKS_PATH = "data/links.json";
 const CATEGORIES_PATH = "data/categories.json";
+const CONTENT_DIR = "content/";
 
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -94,10 +95,8 @@ async function getTableOfContent(link) {
       );
     }
 
-    lis = lis.filter(
-      (elem) =>
-        elem !== "#References" && elem !== "#Navigation" && elem !== "#Gallery"
-    );
+    const excludedElements = ["#References", "#Navigation", "#Gallery"];
+    lis = lis.filter((elem) => !excludedElements.includes(elem));
 
     return lis;
   });
@@ -154,16 +153,126 @@ async function getDescription(link) {
   browser.close();
 }
 
+async function readMap(path) {
+  let map = JSON.parse(fs.readFileSync(path + "/map.json"));
+
+  const browser = await puppeteer.launch();
+  const page = await browser.newPage();
+  await page.goto(map.url);
+
+  for (let sec of map.toc) {
+    if (typeof sec === "string") {
+      console.log(sec);
+      const content = await page.evaluate(getContentFromHeader(), sec);
+      map[sec] = content;
+
+      console.log(map[sec]);
+      continue;
+    } else {
+      if (Object.keys(sec)[0] === "#Appears_In") {
+        console.log("#Appears_In");
+        const content = await page.evaluate(getAppearances());
+        map["#Appears_In"] = content;
+        console.log(map["#Appears_In"]);
+      } else {
+        for (let sub of sec[Object.keys(sec)[0]]) {
+          console.log(sub);
+          const content = await page.evaluate(getContentFromHeader(), sub);
+          map[sub] = content;
+          console.log(map[sub]);
+        }
+      }
+    }
+  }
+
+  fs.writeFileSync(path + "/content.json", JSON.stringify(map, null, 2));
+  browser.close();
+
+  function getAppearances() {
+    return () => {
+      let list = document.getElementById("Appears_In").parentElement;
+      list = list.nextElementSibling;
+      let link = [];
+
+      while (list.nodeName !== "H2") {
+        while (list.nodeName !== "UL") list = list.nextElementSibling;
+        let lis = Array.from(list.querySelectorAll("li"));
+        for (let li of lis)
+          Array.from(li.querySelectorAll("a"))
+            .map((a) => a.href)
+            .forEach((a) => link.push(a));
+        list = list.nextElementSibling;
+      }
+      return { link, text: "" };
+    };
+  }
+
+  function getContentFromHeader() {
+    return (s) => {
+      let cont = {
+        link: [],
+        text: "",
+      };
+
+      const excludes = ["#Catchphrases_/_Running_Gags", "#Trivia"];
+      if (excludes.includes(s)) {
+        let list = document.getElementById(s.substring(1)).parentElement
+          .nextElementSibling;
+
+        let figs = list.querySelectorAll("figure");
+        if (figs.length > 0) for (let fig of figs) fig.remove();
+
+        filterLinks(Array.from(list.querySelectorAll("a")));
+        cont.text += list.textContent.trim();
+        return cont;
+      }
+
+      let start = document.getElementById(s.substring(1)).parentElement
+        .nextElementSibling;
+
+      let text = "";
+
+      while (start.nodeName === "P" || start.nodeName === "FIGURE") {
+        if (start.nodeName === "FIGURE") {
+          start = start.nextElementSibling;
+          continue;
+        }
+
+        let span = start.querySelector("span");
+        if (span !== null) {
+          filterLinks(Array.from(span.querySelectorAll("a")));
+          start.removeChild(span);
+        }
+
+        filterLinks(Array.from(start.querySelectorAll("a")));
+        text += start.textContent;
+        start = start.nextElementSibling;
+      }
+
+      cont.text = text.trim();
+      return cont;
+
+      function filterLinks(links) {
+        if (links.length > 0)
+          for (let link of links)
+            if (link.href.search("#cite") === -1) cont.link.push(link.href);
+      }
+    };
+  }
+}
+
 // getLinks();
-getCategories();
+// getCategories();
 // getTableOfContent({
-//   id: "Occult Research Club",
-//   url: "https://bakemonogatari.fandom.com/wiki/Occult_Research_Club",
+//   id: "Tsubasa Hanekawa",
+//   url: "https://bakemonogatari.fandom.com/wiki/Tsubasa_Hanekawa",
 // });
 // getDescription({
 //   id: "Arcs",
 //   url: "https://bakemonogatari.fandom.com/wiki/Arcs",
 // });
+
+readMap(CONTENT_DIR + "Tsubasa Hanekawa");
 
 /************ Pages with different structure **************
 https://bakemonogatari.fandom.com/wiki/Tsubasa_Hanekawa
