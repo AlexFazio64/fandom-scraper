@@ -1,5 +1,7 @@
-const puppeteer = require("puppeteer");
 const fs = require("fs");
+const puppeteer = require("puppeteer");
+
+const logStream = fs.createWriteStream("log.txt", { flags: "a" });
 
 const LINKS_PATH = "data/links.json";
 const CATEGORIES_PATH = "data/categories.json";
@@ -259,13 +261,31 @@ async function readMap(path) {
   }
 }
 
+function logger(message, type = "info", function_name = "", error = null) {
+  message = `[${new Date().toLocaleString()}] [${type}] [${function_name}] ${message}`;
+
+  if (error !== null) {
+    message += "\n" + error;
+    logStream.write(message + "\n");
+    return;
+  }
+
+  logStream.write(message + "\n");
+}
+
+process.on("uncaughtException", (err) => {
+  logger(err.message, "error", "uncaughtException", err.stack);
+  logStream.end();
+});
+
 // getLinks();
 // getCategories();
 // getTableOfContent({
 //   id: "Tsubasa Hanekawa",
 //   url: "https://bakemonogatari.fandom.com/wiki/Tsubasa_Hanekawa",
 // });
-readMap(CONTENT_DIR + "Tsubasa Hanekawa");
+
+// readMap(CONTENT_DIR + "Tsubasa Hanekawa");
 
 /************ Pages with different structure **************
 https://bakemonogatari.fandom.com/wiki/Tsubasa_Hanekawa
