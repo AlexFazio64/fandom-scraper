@@ -215,8 +215,12 @@ async function readMap(path) {
 
       const excludes = ["#Catchphrases_/_Running_Gags", "#Trivia"];
       if (excludes.includes(s)) {
-        let list = document.getElementById(s.substring(1)).parentElement
-          .nextElementSibling;
+        let list = document.getElementById(s.substring(1));
+
+        if (list === null) return cont;
+        list = list.parentElement;
+        if (list === null) return cont;
+        list = list.nextElementSibling;
 
         let figs = list.querySelectorAll("figure");
         if (figs.length > 0) for (let fig of figs) fig.remove();
@@ -226,8 +230,11 @@ async function readMap(path) {
         return cont;
       }
 
-      let start = document.getElementById(s.substring(1)).parentElement
-        .nextElementSibling;
+      let start = document.getElementById(s.substring(1));
+      if (start === null) return cont;
+      start = start.parentElement;
+      if (start === null) return cont;
+      start = start.nextElementSibling;
 
       let text = "";
 
