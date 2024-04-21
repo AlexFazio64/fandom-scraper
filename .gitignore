@@ -1,3 +1,5 @@
 node_modules
 content
 package-lock.json
+log.txt
+parsed.json

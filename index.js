@@ -1,4 +1,5 @@
 const fs = require("fs");
+const { exit } = require("process");
 const puppeteer = require("puppeteer");
 
 const logStream = fs.createWriteStream("log.txt", { flags: "a" });
@@ -69,7 +70,7 @@ async function getCategories() {
 }
 
 async function getTableOfContent(link) {
-  console.log(`Getting content for [ ${link.id} ]`);
+  logger(`Getting content for [ ${link.id} ]`, "info", "getTableOfContent");
 
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
@@ -90,12 +91,10 @@ async function getTableOfContent(link) {
       }
     );
 
-    if (lis.length === 0) {
-      console.error("No table of content found");
+    if (lis.length === 0)
       lis = Array.from(document.querySelectorAll(".mw-headline")).map(
         (elem) => "#" + elem.id
       );
-    }
 
     const excludedElements = ["#References", "#Navigation", "#Gallery"];
     lis = lis.filter((elem) => !excludedElements.includes(elem));
@@ -110,14 +109,18 @@ async function getTableOfContent(link) {
   };
 
   const path = `content/${link.id.replace(/[<>:"/\\|?*]/g, "_")}`;
-  if (!fs.existsSync(path)) fs.mkdirSync(path, { recursive: true });
-
+  if (!fs.existsSync(path)) {
+    logger(`Creating directory [ ${path} ]`, "info", "getTableOfContent");
+    fs.mkdirSync(path, { recursive: true });
+  }
+  logger(`Writing map.json for [ ${link.id} ]`, "info", "getTableOfContent");
   fs.writeFileSync(`${path}/map.json`, JSON.stringify(content, null, 2));
+
   browser.close();
 }
 
 async function getDescription(page, link) {
-  console.log(`Getting description for [ ${link.id} ]`);
+  logger(`Getting description for [ ${link.id} ]`, "info", "getDescription");
   await page.goto(link.url);
 
   const description = await page.evaluate(() => {
@@ -126,18 +129,13 @@ async function getDescription(page, link) {
     let curr = null;
 
     if (arr.length !== 0) curr = arr[0].nextElementSibling;
-    else {
-      console.error("No portable-infobox found");
+    else
       arr = Array.from(document.querySelectorAll(".mw-parser-output > figure"));
-    }
 
-    if (arr.length === 0) {
-      console.error("No figure found");
-      arr = Array.from(document.querySelectorAll(".mw-parser-output"));
-      curr = arr[0].firstElementChild;
-    } else curr = arr[0].nextElementSibling;
-
-    console.log("Found anchor: " + arr[0].nodeName);
+    if (arr.length === 0)
+      curr = Array.from(document.querySelectorAll(".mw-parser-output"))[0]
+        .firstElementChild;
+    else curr = arr[0].nextElementSibling;
 
     while (curr !== null) {
       if (curr.id === "toc" || curr.nodeName === "H2") break;
@@ -152,34 +150,35 @@ async function getDescription(page, link) {
 }
 
 async function readMap(path) {
+  logger(`Reading map for [ ${path} ]`, "info", "readMap");
   let map = JSON.parse(fs.readFileSync(path + "/map.json"));
 
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
   await page.goto(map.url);
 
+  logger(`Getting description for [ ${map.id} ]`, "info", "readMap");
   map["Description"] = await getDescription(page, map);
 
   for (let sec of map.toc) {
+    logger(`Parsing section [ ${sec} ]`, "info", "readMap");
     if (typeof sec === "string") {
-      console.log(sec);
+      logger(`Getting content for [ ${sec} ]`, "info", "readMap");
       const content = await page.evaluate(getContentFromHeader(), sec);
       map[sec] = content;
-
-      console.log(map[sec]);
-      continue;
     } else {
+      logger(
+        `Getting content for [ ${Object.keys(sec)[0]} ]`,
+        "info",
+        "readMap"
+      );
       if (Object.keys(sec)[0] === "#Appears_In") {
-        console.log("#Appears_In");
         const content = await page.evaluate(getAppearances());
         map["#Appears_In"] = content;
-        console.log(map["#Appears_In"]);
       } else {
         for (let sub of sec[Object.keys(sec)[0]]) {
-          console.log(sub);
           const content = await page.evaluate(getContentFromHeader(), sub);
           map[sub] = content;
-          console.log(map[sub]);
         }
       }
     }
@@ -232,6 +231,8 @@ async function readMap(path) {
 
       let text = "";
 
+      if (start === null) return cont;
+
       while (start.nodeName === "P" || start.nodeName === "FIGURE") {
         if (start.nodeName === "FIGURE") {
           start = start.nextElementSibling;
@@ -262,21 +263,63 @@ async function readMap(path) {
 }
 
 function logger(message, type = "info", function_name = "", error = null) {
-  message = `[${new Date().toLocaleString()}] [${type}] [${function_name}] ${message}`;
+  message = `[${new Date().toLocaleString()}] [${type}] [@${function_name}] ${message}`;
 
   if (error !== null) {
     message += "\n" + error;
     logStream.write(message + "\n");
-    return;
+    console.log(message);
+    exit(1);
   }
 
   logStream.write(message + "\n");
+  console.log(message);
 }
 
 process.on("uncaughtException", (err) => {
   logger(err.message, "error", "uncaughtException", err.stack);
   logStream.end();
 });
+
+async function start() {
+  //read links.json and parsed.json
+  let parsed = [];
+  let links = [];
+
+  try {
+    logger("Reading links.json", "info", "start");
+    links = JSON.parse(fs.readFileSync(LINKS_PATH));
+    logger("Reading parsed.json", "info", "start");
+    parsed = Array.from(JSON.parse(fs.readFileSync("data/parsed.json")));
+  } catch (err) {
+    logger("Error reading links.json", "error", "start", err.stack);
+    return;
+  }
+
+  for (let i = 0; i < links.length; i++) {
+    if (parsed.find((elem) => elem === links[i].id) !== undefined) {
+      logger(`[ ${links[i].id} ] already parsed`, "info", "start");
+      continue;
+    }
+
+    logger(`Getting content for [ ${links[i].id} ]`, "info", "start");
+    await getTableOfContent(links[i]);
+    logger(`Reading map for [ ${links[i].id} ]`, "info", "start");
+    await readMap(`${CONTENT_DIR}${links[i].id.replace(/[<>:"/\\|?*]/g, "_")}`);
+    logger(`Finished [ ${links[i].id} ]`, "info", "start");
+
+    logger(`Adding [ ${links[i].id} ] to parsed.json`, "info", "start");
+    parsed.push(links[i].id);
+    fs.writeFileSync("data/parsed.json", JSON.stringify(parsed, null, 2));
+
+    if ((i + 1) % 10 === 0) {
+      logger("Sleeping for 5 seconds", "info", "start");
+      await sleep(5000);
+    }
+  }
+}
+
+start();
 
 // getLinks();
 // getCategories();
