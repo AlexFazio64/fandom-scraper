@@ -243,6 +243,7 @@ async function readMap(path) {
       while (start.nodeName === "P" || start.nodeName === "FIGURE") {
         if (start.nodeName === "FIGURE") {
           start = start.nextElementSibling;
+          if (start === null) return cont; // you never know
           continue;
         }
 
@@ -255,6 +256,8 @@ async function readMap(path) {
         filterLinks(Array.from(start.querySelectorAll("a")));
         text += start.textContent;
         start = start.nextElementSibling;
+
+        if (start === null) break; // you never know... 2
       }
 
       cont.text = text.trim();
